@@ -11,18 +11,25 @@ cache accounting), so only **within-agent Ash-vs-Ecto deltas** are compared.
 - `bin/run_one.sh` / `bin/run_pilot.sh` — runner + loop. `analyze.exs` — deltas.
 - Pinned controls: reasoning effort = high (identical across all runs), fixed models.
 
-## Pilot results (2026-05-30, opus-4-7 / gpt-5.5, effort=high)
+## Results — N=5 (2026-05-30, opus-4-7 / gpt-5.5, effort=high)
 
-| Agent | Ecto mean tokens (n) | Ash mean tokens (n) | Ash Δ | Ecto turns | Ash turns |
-|-------|---------------------:|--------------------:|------:|-----------:|----------:|
-| Claude (opus-4-7) | 630,293 (3) | 1,758,599 (5) | **+179%** | 23.3 | 31.0 |
-| Codex (gpt-5.5)   | 517,920 (3) |   959,491 (3) |  **+85%** | 22.7 | 32.3 |
+20 runs, all green (5 per agent × framework cell).
 
-All runs reached green. The effect **replicates across both agents** and far exceeds the
-original ~25% hypothesis. Claude's larger delta is driven by cache-read tokens (the
-bigger Ash context is re-read each turn, compounding with more turns). Variance is high
-(Codex Ash 526k–1.26M), so N=5+ is needed before publishing a precise number.
+| Agent | Ecto mean tokens | Ash mean tokens | Ash Δ | Ecto turns | Ash turns |
+|-------|-----------------:|----------------:|------:|-----------:|----------:|
+| Claude (opus-4-7) | 671,886 | 1,758,599 | **+162%** | 22.4 | 31.0 |
+| Codex (gpt-5.5)   | 533,001 | 1,015,218 |  **+90%** | 23.2 | 32.8 |
 
-Notes: Claude's flaky 400 "thinking block" error recurs at high effort (runner retries);
-the headline metric is tokens-processed — dollar cost deltas are smaller because Claude
-cache-read bills cheaply.
+The effect **replicates across both agents** and far exceeds the original ~25% hypothesis
+(Ash ≈ 2.6× tokens on Claude, ≈ 1.9× on Codex). Deltas were stable from the n=3 pilot
+(Claude +179% → +162%, Codex +85% → +90%; pilot data in `results/pilot-n3.jsonl`). Both
+agents also take ~40% more turns to reach green on Ash.
+
+Why Claude's delta is larger: its total is dominated by cache-read — the bigger Ash
+context (resources + the 1,556-line usage-rules AGENTS.md) is re-read each turn, so
+context size × turn count compounds.
+
+Notes: per-run variance is high (e.g. Codex Ash 526k–1.44M), so report medians + spread
+alongside means before publishing. Headline metric is tokens-processed; dollar-cost
+deltas are smaller because Claude cache-read bills cheaply. Claude's flaky 400
+"thinking-block" error recurs at high effort — the runner detects and retries it.
