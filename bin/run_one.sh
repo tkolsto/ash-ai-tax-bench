@@ -29,7 +29,9 @@ while [ "$ATTEMPT" -lt "$MAX_ATTEMPTS" ] && [ "$AGENT_OK" = false ]; do
       claude -p "$PROMPT" --output-format json --model "$CLAUDE_MODEL" \
         --effort "$EFFORT" --dangerously-skip-permissions \
         > "$TRANSCRIPT" 2>"$TRANSCRIPT.err" </dev/null || true
-      IS_ERR=$(jq -r '.is_error // "parsefail"' "$TRANSCRIPT" 2>/dev/null || echo parsefail)
+      # NB: jq's `//` treats false as empty, so never use `.is_error // x` here.
+      IS_ERR=$(jq -r '.is_error' "$TRANSCRIPT" 2>/dev/null)
+      [ -z "$IS_ERR" ] && IS_ERR=parsefail
       if [ "$IS_ERR" = "false" ]; then
         IN=$(jq -r '.usage.input_tokens // 0' "$TRANSCRIPT")
         OUT=$(jq -r '.usage.output_tokens // 0' "$TRANSCRIPT")
