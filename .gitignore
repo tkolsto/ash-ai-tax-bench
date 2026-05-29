@@ -1,0 +1,9 @@
+tmp/
+results/*.transcript
+skeletons/*/_build/
+skeletons/*/deps/
+skeletons/*/*.db
+skeletons/*/*.db-*
+reference/*/_build/
+reference/*/deps/
+reference/*/*.db
