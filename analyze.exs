@@ -1,12 +1,17 @@
 # Run: elixir analyze.exs results/pilot.jsonl
 [path | _] = System.argv()
 
-rows =
+all_rows =
   path
   |> File.stream!()
   |> Enum.map(&String.trim/1)
   |> Enum.reject(&(&1 == ""))
   |> Enum.map(&:json.decode/1)
+
+# Only completed (green) runs are token-comparable; incomplete runs under-count.
+rows = Enum.filter(all_rows, & &1["completed"])
+excluded = length(all_rows) - length(rows)
+if excluded > 0, do: IO.puts("(excluded #{excluded} non-green run(s) from the comparison)")
 
 cells = Enum.group_by(rows, &{&1["agent"], &1["framework"]})
 mean = fn xs -> if xs == [], do: 0.0, else: Enum.sum(xs) / length(xs) end
