@@ -5,6 +5,10 @@ Measures how many tokens an AI coding agent spends implementing the *same* featu
 shared green acceptance suite. Token totals differ per agent (different tokenizers /
 cache accounting), so only **within-agent Ash-vs-Ecto deltas** are compared.
 
+> **Read the writeup:** [The Ash AI Tax](https://t.kolsto.no/blog/ash-ai-tax/) — what
+> the numbers mean, where the extra tokens go (context, reasoning, "that's not how Ash
+> works" retries), and whether the tax is worth paying. This repo is the receipts.
+
 - `skeletons/{ash,ecto}` — clean starting apps (Ash skeleton ships the idiomatic
   `usage_rules` AGENTS.md). `reference/{ash,ecto}` — validated solutions proving the
   suite is fair/passable in both.
