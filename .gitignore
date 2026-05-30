@@ -1,5 +1,7 @@
 tmp/
 results/*.transcript
+results/*.transcript.err
+results/*.transcript.json
 skeletons/*/_build/
 skeletons/*/deps/
 skeletons/*/*.db
